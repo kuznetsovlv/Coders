@@ -6,7 +6,7 @@ package coders;
  * @param <T>
  * @param <S>
  */
-public interface Coder <T, S> {
+interface Coder <T, S> {
     S code (T source);
     T decode (S code);
 }

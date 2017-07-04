@@ -30,17 +30,7 @@ public class Coders {
         if (!coders.containsKey(type)) {
             switch (type.getValue()) {
                 case 0:
-                    coders.put(type, new Coder() {
-                        @Override
-                        public Object code(Object source) {
-                            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-                        }
-
-                        @Override
-                        public Object decode(Object code) {
-                            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-                        }
-                    });
+                    coders.put(type, new Base64());
                 default: return null;
             }
         }
