@@ -4,7 +4,7 @@ package coders;
  *
  * @author leonid
  */
-class Base64 implements Coder<Byte[], String>, Decoder<Byte[], String> {
+class Base64 implements Coder<byte[], String>, Decoder<byte[], String> {
     
     private final char[] chars;
     
@@ -34,26 +34,50 @@ class Base64 implements Coder<Byte[], String>, Decoder<Byte[], String> {
                 chars[i] = '/';
             }
         }
-    }    
+    }
+    
+    private int[] glue (byte[] bytes) {
+        int[] blocks = new int[(int)Math.floor(bytes.length / 3.0)];
+        
+        for (int i = 0, blockIndex = 0; i < bytes.length; ++i, ++blockIndex) {
+            int rest = bytes.length - i - 1;
+            int block = rest < 3 ? 3 - rest : 0;
+            
+            for (int j = 0; j < 3; ++j) {
+                i += j;
+                
+                byte item = i < bytes.length ? bytes[i] : 0;
+                
+                block <<= 8;
+                block |= item;
+            }           
+            blocks[blockIndex] = block;
+        }
+        
+        return blocks;
+    }
 
     @Override
-    public String code(Byte[] source) {
-        byte [] byteSet = new byte[3];
+    public String code(byte[] source) {  
+        int [] blocks = this.glue(source);
+        final int mask = 1 << 7 - 1;
         
         StringBuilder str = new StringBuilder();
         
-        int rest = source.length % 3;
-        final int ends = rest == 0 ? 0 : 3 - rest;
-        
-        while (ends > 0) {
-            str.append('=');
-        }
-        
+        for (int i = 0; i < blocks.length; ++i) {
+            int ends = blocks[i] >>> 24;
+            StringBuilder symbols = new StringBuilder();
+            for (int j = 0; j < 24; j += 6) {
+                symbols.append(ends-- > 0 ? '=' : this.chars[(blocks[i] >>> j) & mask]);
+            }
+            
+            str.append(symbols.reverse());
+        }        
         return str.toString();
     }
 
     @Override
-    public Byte[] decode(String code) {
+    public byte[] decode(String code) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
