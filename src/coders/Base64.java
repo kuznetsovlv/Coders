@@ -4,7 +4,7 @@ package coders;
  *
  * @author leonid
  */
-class Base64 implements Coder<Byte[], String> {
+class Base64 implements Coder<Byte[], String>, Decoder<Byte[], String> {
     
     private final char[] chars;
     

@@ -8,5 +8,4 @@ package coders;
  */
 interface Coder <T, S> {
     S code (T source);
-    T decode (S code);
 }
