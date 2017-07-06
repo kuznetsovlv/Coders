@@ -39,7 +39,7 @@ public class Coders {
     }
     
     public static void main(String[] args) {
-        byte[] byteList = {-128, 1, 1, 0};
+        byte[] byteList = {-128, 1, 1, 0, -1};
         
         System.out.println(get(CoderTypes.BASE64).code(byteList));
     }
