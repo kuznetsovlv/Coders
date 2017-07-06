@@ -37,7 +37,7 @@ class Base64 implements Coder<byte[], String>, Decoder<byte[], String> {
     }
     
     private int[] glue (byte[] bytes) {
-        int[] blocks = new int[(int)Math.floor(bytes.length / 3.0)];
+        int[] blocks = new int[(int)Math.ceil(bytes.length / 3.0)];
         
         for (int i = 0, blockIndex = 0; i < bytes.length; ++i, ++blockIndex) {
             int rest = bytes.length - i - 1;
