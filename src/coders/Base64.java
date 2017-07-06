@@ -8,9 +8,7 @@ class Base64 implements Coder<byte[], String>, Decoder<byte[], String> {
     
     private final char[] chars;
     
-    Base64 () {
-        int length = 0;
-        
+    Base64 () {        
         chars = new char[64];
         
         int[] sets = {
@@ -39,18 +37,16 @@ class Base64 implements Coder<byte[], String>, Decoder<byte[], String> {
     private int[] glue (byte[] bytes) {
         int[] blocks = new int[(int)Math.ceil(bytes.length / 3.0)];
         
-        for (int i = 0, blockIndex = 0; i < bytes.length; ++i, ++blockIndex) {
-            int rest = bytes.length - i - 1;
-            int block = rest < 3 ? 3 - rest : 0;
-            
+        for (int i = 0, blockIndex = 0; i < bytes.length; i += 3, ++blockIndex) {
+            int rest = bytes.length - i;
+            int block = rest < 3 && rest > 0 ? 3 - rest : 0;
             for (int j = 0; j < 3; ++j) {
-                i += j;
-                
-                byte item = i < bytes.length ? bytes[i] : 0;
+                int k = i + j;
+                int item = k < bytes.length ? bytes[k] : 0;
                 
                 block <<= 8;
-                block |= item;
-            }           
+                block |= (item & 0xff);
+            }
             blocks[blockIndex] = block;
         }
         
@@ -60,10 +56,9 @@ class Base64 implements Coder<byte[], String>, Decoder<byte[], String> {
     @Override
     public String code(byte[] source) {  
         int [] blocks = this.glue(source);
-        final int mask = 1 << 7 - 1;
+        final int mask = (1 << 6) - 1;
         
         StringBuilder str = new StringBuilder();
-        
         for (int i = 0; i < blocks.length; ++i) {
             int ends = blocks[i] >>> 24;
             StringBuilder symbols = new StringBuilder();
