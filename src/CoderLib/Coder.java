@@ -1,4 +1,4 @@
-package coders;
+package CoderLib;
 
 /**
  *
@@ -6,6 +6,6 @@ package coders;
  * @param <T>
  * @param <S>
  */
-interface Coder <T, S> {
+public interface Coder <T, S> {
     S code (T source);
 }

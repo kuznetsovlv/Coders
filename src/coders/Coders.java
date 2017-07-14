@@ -1,46 +1,22 @@
 package coders;
 
-import java.util.HashMap;
-
+import CoderLib.*;
+import java.io.File;
 
 /**
  *
  * @author leonid
  */
-public class Coders {
-   
-    public static enum CoderTypes {
-        BASE64(0);
-        
-        private final int value;
-
-        private CoderTypes(int value) {
-            this.value = value;
+public class Coders {  
+    public static void main(String[] args) {        
+        try {            
+            File file = new File(args[0]);
+        } catch(Exception e) {
+            byte[] byteList = {-128, 1, 1, 0, -1};
+            System.out.println(CoderFactory.get(CoderFactory.CoderTypes.BASE64).code(byteList));
+             
+            System.err.println("e");
+            System.exit(1);
         }
-        
-        protected final int getValue () {
-            return value;
-        }
-    };
-    
-    private static HashMap<CoderTypes, Coder> coders = new HashMap<>();
-    
-    public static Coder get (CoderTypes type) {
-        if (!coders.containsKey(type)) {
-            switch (type.getValue()) {
-                case 0:
-                    coders.put(type, new Base64());
-                    break;
-                default: return null;
-            }
-        }
-        
-        return coders.get(type);
-    }
-    
-    public static void main(String[] args) {
-        byte[] byteList = {-128, 1, 1, 0, -1};
-        
-        System.out.println(get(CoderTypes.BASE64).code(byteList));
     }
 }
