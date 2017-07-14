@@ -34,7 +34,7 @@ class Base64 implements Coder<byte[], String>, Decoder<byte[], String> {
                 chars[i] = (char) ('a' + i - sets[0]);
             } else if (i < sets[0] + sets[1] + sets[2]) {
                 chars[i] = (char) ('0' + i - sets[0] - sets[1]);
-            } else if (i < sets[0] + sets[1] + sets[2] - sets[3]) {
+            } else if (i < sets[0] + sets[1] + sets[2] + sets[3]) {
                 chars[i] = '+';
             } else {
                 chars[i] = '/';
