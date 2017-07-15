@@ -28,18 +28,31 @@ class Base64 implements Coder<byte[], String>, Decoder<byte[], String> {
         };
         
         for (int i = 0; i < chars.length; ++i) {
-            if (i < sets[0]) {
+            if (i < this.sum(sets, 1)) {
                 chars[i] = (char) ('A' + i);
-            } else if (i < sets[0] + sets[1]) {
+            } else if (i < this.sum(sets, 2)) {
                 chars[i] = (char) ('a' + i - sets[0]);
-            } else if (i < sets[0] + sets[1] + sets[2]) {
+            } else if (i < this.sum(sets, 3)) {
                 chars[i] = (char) ('0' + i - sets[0] - sets[1]);
-            } else if (i < sets[0] + sets[1] + sets[2] + sets[3]) {
+            } else if (i < this.sum(sets, 4)) {
                 chars[i] = '+';
             } else {
                 chars[i] = '/';
             }
         }
+    }
+    
+    private int sum (int[] arr, int n) {
+        int s = 0;
+        
+        if (n > arr.length) {
+            n = arr.length;
+        }
+        
+        for (int i = 0; i < n; ++i) {
+            s+= arr[i];
+        }
+        return s;
     }
     
     private int[] glue (byte[] bytes) {
