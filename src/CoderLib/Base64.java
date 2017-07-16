@@ -106,6 +106,9 @@ class Base64 implements Coder<byte[], String>, Decoder<byte[], String> {
 
     @Override
     public byte[] decode (String code) throws SourceFormatException {
+        if (code == null || code.length() == 0) {
+            throw new SourceFormatException("No Base64 string.", code);
+        }
         if (code.length() % 4 != 0) {
             throw new SourceFormatException("Base64 string length must be dividable by 4.", code);
         }
