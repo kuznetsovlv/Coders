@@ -117,7 +117,7 @@ class Base64 implements Coder<byte[], String>, Decoder<byte[], String> {
             throw new SourceFormatException("Base64 string contains forbiden symbols.", code);
         }
         
-        byte[] result = new byte[code.length() / 4 * 3];
+        byte[] result = new byte[code.length() / 4 * 3 - (code.endsWith("==") ? 2 : code.endsWith("=") ? 1 : 0)];
         
         return result;
     }
