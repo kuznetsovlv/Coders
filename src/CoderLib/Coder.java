@@ -6,6 +6,6 @@ package CoderLib;
  * @param <T>
  * @param <S>
  */
-public interface Coder <T, S> {
-    S code (T source);
+public interface Coder <T, S> extends CoderInterface {
+    S code (T source) throws SourceFormatException;
 }

@@ -7,7 +7,24 @@ import java.io.*;
  *
  * @author leonid
  */
-public class Coders {  
+public class Coders {
+    
+    private static void printByteArray (byte[] arr) {
+        System.out.printf("[");
+        int num = arr.length - 1;
+        int i;
+        
+        for(i = 0; i < arr.length; ++i) {
+            System.out.printf("%d", arr[i]);
+            
+            if (i < num) {
+                System.out.printf(", ");
+            }
+        }
+        
+        System.out.printf("]\n");
+    }
+    
     public static void main(String[] args) {
         byte[] byteList = {-128, 1, 1, 0, -1};
         
@@ -22,7 +39,13 @@ public class Coders {
         } catch (Exception e) {
             System.err.println(e);
         } finally {
-            System.out.println(CoderFactory.get(CoderFactory.CoderTypes.BASE64).code(byteList));
+            try {
+                String result = (String) ((Coder) CoderFactory.get(CoderFactory.CoderTypes.BASE64)).code(byteList);
+                System.out.println(result);
+                printByteArray((byte[]) ((Decoder) CoderFactory.get(CoderFactory.CoderTypes.BASE64)).decode(result));
+            } catch (SourceFormatException e) {
+                System.err.println(e);
+            }
         }
     }
 }

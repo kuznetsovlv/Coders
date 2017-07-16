@@ -1,5 +1,7 @@
 package CoderLib;
 
+import java.util.regex.Pattern;
+
 /**
  *
  * @author leonid
@@ -14,6 +16,8 @@ class Base64 implements Coder<byte[], String>, Decoder<byte[], String> {
     private final int BITS_IN_SYMBOL = 6;
     private final int SYMBOLS_IN_BLOCK = 4;
     private final int SYMBOL_BITS_IN_BLOCK = SYMBOLS_IN_BLOCK * BITS_IN_SYMBOL;
+    
+    private Pattern pattern = null;
     
     
     Base64 () {        
@@ -91,9 +95,27 @@ class Base64 implements Coder<byte[], String>, Decoder<byte[], String> {
         }        
         return str.toString();
     }
+    
+    private boolean isBase64Correct (String s) {    
+        if (this.pattern == null) {
+            this.pattern = Pattern.compile("^\\w+={0,2}$");
+        }
+        
+        return this.pattern.matcher(s).matches();
+    }
 
     @Override
-    public byte[] decode(String code) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public byte[] decode (String code) throws SourceFormatException {
+        if (code.length() % 4 != 0) {
+            throw new SourceFormatException("Base64 string length must be dividable by 4.", code);
+        }
+        
+        if (!this.isBase64Correct(code)) {
+            throw new SourceFormatException("Base64 string contains forbiden symbols.", code);
+        }
+        
+        byte[] result = new byte[code.length() / 4 * 3];
+        
+        return result;
     }
 }
