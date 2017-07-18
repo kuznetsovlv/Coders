@@ -25,28 +25,67 @@ public class Coders {
         System.out.printf("]\n");
     }
     
-    public static void main(String[] args) {
-        byte[] byteList = {-128, 1, 1, 0, -1, 67, 2};
+    private static String codeFile (String fileName) {
+        File file = new File(fileName);
         
-        try {
-            File file = new File(args[0]);
-            try(FileInputStream input = new FileInputStream(file)) {  
-                byteList = new byte[(int)file.length()];  
-                input.read(byteList);
-            } catch(Exception e) {
-                throw e;
-            }
-        } catch (Exception e) {
+        try(FileInputStream input = new FileInputStream(file)) {  
+            byte[] byteList = new byte[(int)file.length()];  
+            input.read(byteList);
+            return Coders.codeBytes(byteList);
+        } catch(Exception e) {
             System.err.println(e);
-        } finally {
-            try {
-                String result = (String) ((Coder) CoderFactory.get(CoderFactory.CoderTypes.BASE64)).code(byteList);
-                System.out.println(result);
-                printByteArray(byteList);
-                printByteArray((byte[]) ((Decoder) CoderFactory.get(CoderFactory.CoderTypes.BASE64)).decode(result));
-            } catch (SourceFormatException e) {
-                System.err.println(e);
-            }
+            System.exit(1);
+        }
+        
+        return null;
+    }
+    
+    private static byte[] decodeString (String str) {
+        try {
+            return (byte[]) ((Decoder) CoderFactory.get(CoderFactory.CoderTypes.BASE64)).decode(str);
+        } catch (SourceFormatException e) {
+             System.err.println(e);
+            System.exit(3);
+        }
+        
+        return null;
+    }
+    
+    private static String codeBytes (byte[] bytes) {
+        try {
+            return (String) ((Coder) CoderFactory.get(CoderFactory.CoderTypes.BASE64)).code(bytes);
+        } catch (SourceFormatException e) {
+            System.err.println(e);
+            System.exit(2);
+        }
+        
+        return null;
+    }
+    
+    private static byte[] createRandomByteList () {
+        int length = 1 + (int) (10 * Math.random());
+        
+        byte[] bytes = new byte[length];
+        
+        for (int i = 0; i < length; ++i) {
+            bytes[i] = (byte)(256 * Math.random() - 128);
+        }
+        
+        return bytes;
+    }
+    
+    public static void main(String[] args) {        
+        if (args.length > 0) {
+            System.out.println(codeFile(args[0]));
+        } else {
+            byte[] byteList = createRandomByteList();
+            
+            printByteArray(byteList);
+            
+            String base64 = codeBytes(byteList);
+            System.out.println(base64);
+            
+            printByteArray(decodeString(base64));
         }
     }
 }
