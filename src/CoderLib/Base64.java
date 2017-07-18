@@ -96,7 +96,7 @@ class Base64 implements Coder<byte[], String>, Decoder<byte[], String> {
     }
     
     private boolean isBase64Correct (String s) {    
-        return s.matches("^\\w+={0,2}$");
+        return s.matches("^[\\w+\\/]+={0,2}$");
     }
     
     private int getIndex (char c) {
