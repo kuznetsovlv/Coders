@@ -1,6 +1,6 @@
 package coders;
 
-import CoderLib.*;
+import coderLib.*;
 import java.io.*;
 
 /**
@@ -8,6 +8,21 @@ import java.io.*;
  * @author leonid
  */
 public class Coders {
+    
+    public static void main(String[] args) {        
+        if (args.length > 0) {
+            System.out.println(codeFile(args[0]));
+        } else {
+            byte[] byteList = createRandomByteList();
+            
+            printByteArray(byteList);
+            
+            String base64 = codeBytes(byteList);
+            System.out.println(base64);
+            
+            printByteArray(decodeString(base64));
+        }
+    }
     
     private static void printByteArray (byte[] arr) {
         System.out.printf("[");
@@ -42,7 +57,7 @@ public class Coders {
     
     private static byte[] decodeString (String str) {
         try {
-            return (byte[]) ((Decoder) CoderFactory.get(CoderFactory.CoderTypes.BASE64)).decode(str);
+            return (byte[]) CoderFactory.get(CoderFactory.CoderTypes.BASE64).decode(str);
         } catch (SourceFormatException e) {
              System.err.println(e);
             System.exit(3);
@@ -53,7 +68,7 @@ public class Coders {
     
     private static String codeBytes (byte[] bytes) {
         try {
-            return (String) ((Coder) CoderFactory.get(CoderFactory.CoderTypes.BASE64)).code(bytes);
+            return (String) CoderFactory.get(CoderFactory.CoderTypes.BASE64).code(bytes);
         } catch (SourceFormatException e) {
             System.err.println(e);
             System.exit(2);
@@ -72,20 +87,5 @@ public class Coders {
         }
         
         return bytes;
-    }
-    
-    public static void main(String[] args) {        
-        if (args.length > 0) {
-            System.out.println(codeFile(args[0]));
-        } else {
-            byte[] byteList = createRandomByteList();
-            
-            printByteArray(byteList);
-            
-            String base64 = codeBytes(byteList);
-            System.out.println(base64);
-            
-            printByteArray(decodeString(base64));
-        }
     }
 }

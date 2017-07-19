@@ -1,4 +1,4 @@
-package CoderLib;
+package coderLib;
 
 import java.util.HashMap;
 
@@ -21,9 +21,9 @@ public  class CoderFactory {
         }
     };
     
-    private static final HashMap<CoderTypes, CoderInterface> coders = new HashMap<>();
+    private static final HashMap<CoderTypes, Coder> coders = new HashMap<>();
     
-    public static CoderInterface get (CoderTypes type) {
+    public static Coder get (CoderTypes type) {
         if (!coders.containsKey(type)) {
             switch (type.getValue()) {
                 case 0:

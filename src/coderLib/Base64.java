@@ -1,4 +1,4 @@
-package CoderLib;
+package coderLib;
 
 import java.util.regex.Pattern;
 
@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
  *
  * @author leonid
  */
-class Base64 implements Coder<byte[], String>, Decoder<byte[], String> {
+class Base64 implements Coder<byte[], String> {
     
     private final char[] chars; // Symbols
     

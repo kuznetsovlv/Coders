@@ -1,4 +1,4 @@
-package CoderLib;
+package coderLib;
 
 import java.util.zip.DataFormatException;
 

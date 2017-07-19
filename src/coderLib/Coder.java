@@ -1,4 +1,4 @@
-package CoderLib;
+package coderLib;
 
 /**
  *
@@ -6,6 +6,7 @@ package CoderLib;
  * @param <T>
  * @param <S>
  */
-public interface Decoder<T, S> extends CoderInterface {
+public interface Coder <T, S> {
+    S code (T source) throws SourceFormatException;
     T decode (S code) throws SourceFormatException;
 }
