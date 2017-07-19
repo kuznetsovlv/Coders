@@ -8,18 +8,16 @@ import java.util.regex.Pattern;
  */
 class Base64 implements Coder<byte[], String> {
     
-    private final char[] chars; // Symbols
+    private static final char[] chars; // Symbols
     
     // Constants    
-    private final int BYTE_BLOCK_SIZE = 3;
-    private final int BITS_IN_SYMBOL = 6;
-    private final int SYMBOLS_IN_BLOCK = 4;
-    private final int SYMBOL_BITS_IN_BLOCK = SYMBOLS_IN_BLOCK * BITS_IN_SYMBOL;
+    private static final int BYTE_BLOCK_SIZE = 3;
+    private static final int BITS_IN_SYMBOL = 6;
+    private static final int SYMBOLS_IN_BLOCK = 4;
+    private static final int SYMBOL_BITS_IN_BLOCK = SYMBOLS_IN_BLOCK * BITS_IN_SYMBOL;
+    private static int MASK = (1 << 24) - (1 << 16);
     
-    private Pattern pattern = null;
-    private int MASK = 0;
-    
-    Base64 () {        
+    static {        
         chars = new char[64];
         
         int[] sets = {
@@ -31,13 +29,13 @@ class Base64 implements Coder<byte[], String> {
         };
         
         for (int i = 0; i < chars.length; ++i) {
-            if (i < this.sum(sets, 1)) {
+            if (i < Base64.sum(sets, 1)) {
                 chars[i] = (char) ('A' + i);
-            } else if (i < this.sum(sets, 2)) {
+            } else if (i < Base64.sum(sets, 2)) {
                 chars[i] = (char) ('a' + i - sets[0]);
-            } else if (i < this.sum(sets, 3)) {
+            } else if (i < Base64.sum(sets, 3)) {
                 chars[i] = (char) ('0' + i - sets[0] - sets[1]);
-            } else if (i < this.sum(sets, 4)) {
+            } else if (i < Base64.sum(sets, 4)) {
                 chars[i] = '+';
             } else {
                 chars[i] = '/';
@@ -45,7 +43,57 @@ class Base64 implements Coder<byte[], String> {
         }
     }
     
-    private int sum (int[] arr, int n) {
+    @Override
+    public String code(byte[] source) {  
+        int [] blocks = Base64.glue(source);
+        final int mask = (1 << Base64.BITS_IN_SYMBOL) - 1;
+        
+        StringBuilder str = new StringBuilder();
+        for (int i = 0; i < blocks.length; ++i) {
+            int ends = blocks[i] >>> Base64.SYMBOL_BITS_IN_BLOCK;
+            StringBuilder symbols = new StringBuilder();
+            for (int j = 0; j < Base64.SYMBOL_BITS_IN_BLOCK; j += Base64.BITS_IN_SYMBOL) {
+                symbols.append(ends-- > 0 ? '=' : Base64.chars[(blocks[i] >>> j) & mask]);
+            }
+            
+            str.append(symbols.reverse());
+        }        
+        return str.toString();
+    }
+    
+    @Override
+    public byte[] decode (String code) throws SourceFormatException {
+        int length;
+        
+        if (code == null || (length = code.length()) == 0) {
+            throw new SourceFormatException("No Base64 string.", code);
+        }
+        if (length % 4 != 0) {
+            throw new SourceFormatException("Base64 string length must be dividable by 4.", code);
+        }
+        
+        if (!Base64.isBase64Correct(code)) {
+            throw new SourceFormatException("Base64 string contains forbiden symbols.", code);
+        }
+        
+        byte[] result = new byte[code.length() / 4 * 3 - (code.endsWith("==") ? 2 : code.endsWith("=") ? 1 : 0)];
+        
+        int k = 0;
+        for (int i = 0, j = 4; i < length; i = j, j += 4) {
+            int num = Base64.strSetToInt(code.substring(i, j));
+            int mask = Base64.MASK;
+            
+            while (mask != 0 && k < result.length) {
+                result[k] = (byte) ((num & mask) >>> ((2 - k % 3) * 8));
+                mask >>>= 8;
+                ++k;
+            }
+        }
+        
+        return result;
+    }
+    
+    private static int sum (int[] arr, int n) {
         int s = 0;
         
         if (n > arr.length) {
@@ -58,12 +106,12 @@ class Base64 implements Coder<byte[], String> {
         return s;
     }
     
-    private int[] glue (byte[] bytes) {
-        int[] blocks = new int[(int)Math.ceil(bytes.length / (double)BYTE_BLOCK_SIZE)];
+    private static int[] glue (byte[] bytes) {
+        int[] blocks = new int[(int)Math.ceil(bytes.length / (double)Base64.BYTE_BLOCK_SIZE)];
         
-        for (int i = 0, blockIndex = 0; i < bytes.length; i += BYTE_BLOCK_SIZE, ++blockIndex) {
+        for (int i = 0, blockIndex = 0; i < bytes.length; i += Base64.BYTE_BLOCK_SIZE, ++blockIndex) {
             int rest = bytes.length - i;
-            int block = rest < BYTE_BLOCK_SIZE && rest > 0 ? BYTE_BLOCK_SIZE - rest : 0;
+            int block = rest < Base64.BYTE_BLOCK_SIZE && rest > 0 ? Base64.BYTE_BLOCK_SIZE - rest : 0;
             for (int j = 0; j < 3; ++j) {
                 int k = i + j;
                 int item = k < bytes.length ? bytes[k] : 0;
@@ -76,32 +124,14 @@ class Base64 implements Coder<byte[], String> {
         
         return blocks;
     }
-
-    @Override
-    public String code(byte[] source) {  
-        int [] blocks = this.glue(source);
-        final int mask = (1 << BITS_IN_SYMBOL) - 1;
-        
-        StringBuilder str = new StringBuilder();
-        for (int i = 0; i < blocks.length; ++i) {
-            int ends = blocks[i] >>> SYMBOL_BITS_IN_BLOCK;
-            StringBuilder symbols = new StringBuilder();
-            for (int j = 0; j < SYMBOL_BITS_IN_BLOCK; j += BITS_IN_SYMBOL) {
-                symbols.append(ends-- > 0 ? '=' : this.chars[(blocks[i] >>> j) & mask]);
-            }
-            
-            str.append(symbols.reverse());
-        }        
-        return str.toString();
-    }
     
-    private boolean isBase64Correct (String s) {    
+    private static boolean isBase64Correct (String s) {    
         return s.matches("^[\\w+\\/]+={0,2}$");
     }
     
-    private int getIndex (char c) {
-        for (int index = 0; index < this.chars.length; ++index) {
-            if (c == this.chars[index]) {
+    private static int getIndex (char c) {
+        for (int index = 0; index < Base64.chars.length; ++index) {
+            if (c == Base64.chars[index]) {
                 return index;
             }
         }
@@ -109,57 +139,17 @@ class Base64 implements Coder<byte[], String> {
         return -1;
     }
     
-    private int getMask () {
-        if (this.MASK == 0) {
-            this.MASK = (1 << 24) - (1 << 16);
-        }
-        
-        return this.MASK;
-    }
-    
-    private int strSetToInt (String s) {
+    private static int strSetToInt (String s) {
         int r = 0;    
         char[] charSet = s.toCharArray();
         
         for (int i = 0; i < charSet.length; ++i) {
             r <<= 6;
             if (charSet[i] != '=') {
-                r |= this.getIndex(charSet[i]);
+                r |= Base64.getIndex(charSet[i]);
             }            
         }
         
         return r;
-    }
-
-    @Override
-    public byte[] decode (String code) throws SourceFormatException {
-        int length;
-        
-        if (code == null || (length = code.length()) == 0) {
-            throw new SourceFormatException("No Base64 string.", code);
-        }
-        if (length % 4 != 0) {
-            throw new SourceFormatException("Base64 string length must be dividable by 4.", code);
-        }
-        
-        if (!this.isBase64Correct(code)) {
-            throw new SourceFormatException("Base64 string contains forbiden symbols.", code);
-        }
-        
-        byte[] result = new byte[code.length() / 4 * 3 - (code.endsWith("==") ? 2 : code.endsWith("=") ? 1 : 0)];
-        
-        int k = 0;
-        for (int i = 0, j = 4; i < length; i = j, j += 4) {
-            int num = this.strSetToInt(code.substring(i, j));
-            int mask = this.getMask();
-            
-            while (mask != 0 && k < result.length) {
-                result[k] = (byte) ((num & mask) >>> ((2 - k % 3) * 8));
-                mask >>>= 8;
-                ++k;
-            }
-        }
-        
-        return result;
     }
 }
