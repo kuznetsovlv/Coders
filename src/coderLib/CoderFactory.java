@@ -7,9 +7,12 @@ import java.util.HashMap;
  * @author leonid
  */
 public  class CoderFactory {
+    final static private int BASE64 = 0;
+    final static private int MD5 = 1;
+    
     public static enum CoderTypes {
-        BASE64(0),
-        MD5(1);
+        BASE64(CoderFactory.BASE64),
+        MD5(CoderFactory.MD5);
         
         private final int value;
 
@@ -27,10 +30,10 @@ public  class CoderFactory {
     public static Coder get (CoderTypes type) {
         if (!coders.containsKey(type)) {
             switch (type.getValue()) {
-                case 0:
+                case BASE64:
                     coders.put(type, new Base64());
                     break;
-                case 1:
+                case MD5:
                     coders.put(type, new MD5());
                     break;
                 default: return null;
