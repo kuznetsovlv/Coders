@@ -8,7 +8,8 @@ import java.util.HashMap;
  */
 public  class CoderFactory {
     public static enum CoderTypes {
-        BASE64(0);
+        BASE64(0),
+        MD5(1);
         
         private final int value;
 
@@ -28,6 +29,9 @@ public  class CoderFactory {
             switch (type.getValue()) {
                 case 0:
                     coders.put(type, new Base64());
+                    break;
+                case 1:
+                    coders.put(type, new MD5());
                     break;
                 default: return null;
             }
