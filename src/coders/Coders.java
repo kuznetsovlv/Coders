@@ -32,6 +32,7 @@ public class Coders {
                 System.out.println(CoderFactory.get(CoderFactory.CoderTypes.MD5).code("acc".getBytes()));
                 System.out.println(CoderFactory.get(CoderFactory.CoderTypes.MD5).code("abd".getBytes()));
                 System.out.println(CoderFactory.get(CoderFactory.CoderTypes.MD5).code("abcd".getBytes()));
+                System.out.println(CoderFactory.get(CoderFactory.CoderTypes.MD5).code("a".getBytes()));
 
             } catch (SourceFormatException e) {
                 System.err.println(e);

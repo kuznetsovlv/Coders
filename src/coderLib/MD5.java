@@ -77,30 +77,27 @@ public class MD5 extends CoderAdapter<byte[], String> {
         return this;
     }
     
-    private MD5 stepFour() {
+    private MD5 stepFour () {
         int AA, BB, CC, DD;
         
-        for (int i = 0; i < this.M.length; ++i) {
-            int rest = i % 16;
+        for (int i = 0; i < M.length / 16; ++i) {
             
-            this.X[rest] = this.M[i];
-            
-            if (rest == 15) {
-                AA = this.A;
-                BB = this.B;
-                CC = this.C;
-                DD = this.D;
-                
-                this.roundOne().roundTwo().roundThree().roundFour();
-                
-                this.A += AA;
-                this.B += BB;
-                this.C += CC;
-                this.D += DD;
+            for (int j = 0; j < 16; ++j) {
+                this.X[j] = this.M[i * 16 + j];
             }
+            
+            AA = this.A;
+            BB = this.B;
+            CC = this.C;
+            DD = this.D;
+            
+            this.roundOne().roundTwo().roundThree().roundFour();
+            
+            this.A += AA;
+            this.B += BB;
+            this.C += CC;
+            this.D += DD;
         }
-        
-        
         return this;
     }
     
