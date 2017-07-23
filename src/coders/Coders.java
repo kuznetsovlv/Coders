@@ -1,7 +1,9 @@
 package coders;
 
 import coderLib.*;
+import com.sun.java.swing.plaf.windows.resources.windows;
 import java.io.*;
+import java.nio.charset.Charset;
 
 /**
  *
@@ -9,7 +11,7 @@ import java.io.*;
  */
 public class Coders {
     
-    public static void main(String[] args) {        
+    public static void main(String[] args) {
         if (args.length > 0) {
             System.out.println(codeFile(args[0]));
         } else {
@@ -21,6 +23,20 @@ public class Coders {
             System.out.println(base64);
             
             printByteArray(decodeString(base64));
+            
+            try {
+              
+                // 1bc29b36f623ba82aaf6724fd3b16718;
+                System.out.println(CoderFactory.get(CoderFactory.CoderTypes.MD5).code("md5".getBytes()));
+                System.out.println(CoderFactory.get(CoderFactory.CoderTypes.MD5).code("abc".getBytes()));
+                System.out.println(CoderFactory.get(CoderFactory.CoderTypes.MD5).code("acc".getBytes()));
+                System.out.println(CoderFactory.get(CoderFactory.CoderTypes.MD5).code("abd".getBytes()));
+                System.out.println(CoderFactory.get(CoderFactory.CoderTypes.MD5).code("abcd".getBytes()));
+
+            } catch (SourceFormatException e) {
+                System.err.println(e);
+                System.exit(3);
+            }
         }
     }
     
@@ -59,7 +75,7 @@ public class Coders {
         try {
             return (byte[]) CoderFactory.get(CoderFactory.CoderTypes.BASE64).decode(str);
         } catch (SourceFormatException e) {
-             System.err.println(e);
+            System.err.println(e);
             System.exit(3);
         }
         
