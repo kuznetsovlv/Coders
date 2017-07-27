@@ -15,7 +15,7 @@ public class MD5 extends CoderAdapter<byte[], String> {
     
     private int A, B, C, D;
     private int[] M;
-    private int[] X = new int[16];
+    private final int[] X = new int[16];
     
     private final static int[] T = new int[64];
     
@@ -139,19 +139,19 @@ public class MD5 extends CoderAdapter<byte[], String> {
     }
     
     private int roundOneOperator (int a, int b, int c, int d, int k, int s, int i) {
-        return (int) (b + MD5.loopShift((F(b, c, d) + this.X[k] + this.T[--i]), s));
+        return (int) (b + MD5.loopShift((F(b, c, d) + this.X[k] + MD5.T[--i]), s));
     }
     
     private int roundTwoOperator (int a, int b, int c, int d, int k, int s, int i) {
-        return (int) (b + MD5.loopShift((G(b, c, d) + this.X[k] + this.T[--i]), s));
+        return (int) (b + MD5.loopShift((G(b, c, d) + this.X[k] + MD5.T[--i]), s));
     }
     
      private int roundThreeOperator (int a, int b, int c, int d, int k, int s, int i) {
-        return (int) (b + MD5.loopShift((H(b, c, d) + this.X[k] + this.T[--i]), s));
+        return (int) (b + MD5.loopShift((H(b, c, d) + this.X[k] + MD5.T[--i]), s));
     }
     
     private int roundFourOperator (int a, int b, int c, int d, int k, int s, int i) {
-        return (int) (b + MD5.loopShift((I(b, c, d) + this.X[k] + this.T[--i]), s));
+        return (int) (b + MD5.loopShift((I(b, c, d) + this.X[k] + MD5.T[--i]), s));
     }
     
     private MD5 roundOne () { 
@@ -272,6 +272,6 @@ public class MD5 extends CoderAdapter<byte[], String> {
     private static int loopShift (int x, int y) {
         int mask = -1 << y;
         
-        return ((x & mask) >>> (32 - y)) | (x << y);
+        return (x << y) | ((x & mask) >>> (32 - y));
     }
 }
