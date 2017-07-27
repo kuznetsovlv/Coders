@@ -3,6 +3,9 @@ package coderLib;
 
 import com.sun.javafx.image.impl.ByteArgb;
 
+// FIXME: It seems that algorithm has an error: it creates a hash
+// but resulted hash difers from examples in the web
+
 /**
  *
  * @author leonid
